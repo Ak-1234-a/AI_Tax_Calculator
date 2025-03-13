@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrepreneur Tax Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
 </head>
 <body class="bg-gray-900 text-white">
     <!-- Hero Section -->
     <section class="flex flex-col items-center justify-center h-screen text-center px-6">
+        <div id="hero-animation" class="h-64 w-64"></div>
         <h1 class="text-4xl md:text-6xl font-bold">AI-Powered Tax Calculator for Entrepreneurs</h1>
         <p class="mt-4 text-lg text-gray-300">Smart, Fast & Accurate Tax Computation with AI Assistance.</p>
-        <a href="#features" class="mt-6 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full text-lg">Get Started</a>
+        <div class="mt-6">
+            <a href="#features" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full text-lg">Get Started</a>
+            <a href="login.html" class="ml-4 bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-full text-lg">Login</a>
+        </div>
     </section>
 
     <!-- Features Section -->
@@ -33,34 +38,19 @@
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-16 px-6 text-center bg-gray-800">
-        <h2 class="text-3xl font-semibold">Choose Your Plan</h2>
-        <div class="grid md:grid-cols-3 gap-8 mt-8">
-            <div class="p-6 bg-gray-700 rounded-lg">
-                <h3 class="text-xl font-bold">Free Plan</h3>
-                <p class="mt-2 text-gray-400">Basic tax calculations with limited features.</p>
-                <p class="mt-4 text-lg font-semibold">₹0/month</p>
-                <a href="#" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full">Sign Up</a>
-            </div>
-            <div class="p-6 bg-gray-700 rounded-lg border border-blue-500">
-                <h3 class="text-xl font-bold">Pro Plan</h3>
-                <p class="mt-2 text-gray-400">Advanced AI-powered tax insights and reports.</p>
-                <p class="mt-4 text-lg font-semibold">₹499/month</p>
-                <a href="#" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full">Get Pro</a>
-            </div>
-            <div class="p-6 bg-gray-700 rounded-lg">
-                <h3 class="text-xl font-bold">Enterprise Plan</h3>
-                <p class="mt-2 text-gray-400">Custom solutions for large-scale business taxation.</p>
-                <p class="mt-4 text-lg font-semibold">₹999/month</p>
-                <a href="#" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full">Contact Us</a>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer Section -->
     <footer class="py-6 text-center bg-gray-900 text-gray-400">
         <p>&copy; 2025 Entrepreneur Tax Calculator. All Rights Reserved.</p>
     </footer>
+
+    <script>
+        lottie.loadAnimation({
+            container: document.getElementById('hero-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://assets5.lottiefiles.com/packages/lf20_jcikwtux.json' // Example animation URL
+        });
+    </script>
 </body>
 </html>
