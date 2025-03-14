@@ -8,6 +8,22 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Sample AI-based deduction suggestions (Can be improved with NLP & ML)
+def get_tax_deductions(description, amount):
+    suggestions = []
+    if "travel" in description.lower():
+        suggestions.append("🚗 Consider deducting travel expenses.")
+    if "meal" in description.lower() or "restaurant" in description.lower():
+        suggestions.append("🍽️ Business meals may be partially deductible.")
+    if "software" in description.lower() or "subscription" in description.lower():
+        suggestions.append("💻 Software and SaaS subscriptions may be tax-deductible.")
+    if "training" in description.lower() or "education" in description.lower():
+        suggestions.append("📚 Training & education expenses may be deductible.")
+    if amount >= 800:
+        suggestions.append("🔍 Large transactions might qualify for capital expense deductions.")
+
+    return suggestions
+
 @app.route('/')
 def landing_page():
     return render_template('landing_page.html')
@@ -42,6 +58,9 @@ def upload_file():
         # Classify transaction as Taxable or Non-Taxable
         tax_classification = classify_transaction(description, amount)
         extracted_data["tax_classification"] = tax_classification  # Add classification result
+
+        # Get tax deduction suggestions if taxable
+        extracted_data["deduction_suggestions"] = get_tax_deductions(description, amount) if tax_classification == "Taxable" else []
 
         return jsonify(extracted_data)
     

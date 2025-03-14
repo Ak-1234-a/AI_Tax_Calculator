@@ -31,9 +31,38 @@
                         <td class="p-2">$${data.tax}</td>
                         <td class="p-2">${data.tax_classification}</td>
                     </tr>`;
+
+                // Show tax deduction notification if taxable
+                if (data.tax_classification === "Taxable" && data.deduction_suggestions.length > 0) {
+                    showNotification(data.deduction_suggestions);
+                }
             })
             .catch(error => console.error('Error:', error));
-        }        
+        }
+
+        function showNotification(suggestions) {
+            let message = "<strong>Tax Deduction Tip:</strong><br>" + suggestions.join("<br>");
+            document.getElementById("notification-message").innerHTML = message;
+            let notification = document.getElementById("notification-container");
+            
+            notification.classList.remove("hidden", "translate-x-full");
+            setTimeout(() => {
+                notification.classList.add("translate-x-0");
+            }, 50);
+    
+            // Auto-hide after 6 seconds
+            setTimeout(() => {
+                closeNotification();
+            }, 6000);
+        }
+    
+        function closeNotification() {
+            let notification = document.getElementById("notification-container");
+            notification.classList.add("translate-x-full");
+            setTimeout(() => {
+                notification.classList.add("hidden");
+            }, 500);
+        }
     </script>
 </head>
 <body class="bg-gray-900 text-white">
@@ -83,13 +112,22 @@
                             <th class="p-2">Client</th>
                             <th class="p-2">Amount</th>
                             <th class="p-2">Tax</th>
-                            <th class="p-2">Tax Classification</th>  <!-- New Column -->
+                            <th class="p-2">Tax Classification</th>
                         </tr>
                     </thead>
                     <tbody id="invoiceTableBody">
                         <!-- Rows will be dynamically added here -->
                     </tbody>
                 </table>                
+            </div>
+
+            <!-- Notification Container -->
+            <div id="notification-container" class="fixed top-5 right-5 bg-gray-800 text-white p-4 rounded-lg shadow-lg hidden flex items-start space-x-3 border-l-4 border-blue-500 transition-transform transform translate-x-full">
+                <div class="text-blue-400 text-2xl">⚡</div>
+                <div>
+                    <p id="notification-message" class="text-sm font-medium"></p>
+                    <button onclick="closeNotification()" class="mt-2 text-xs text-gray-300 hover:text-white">Dismiss</button>
+                </div>
             </div>
         </div>
     </div>
