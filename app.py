@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify, redirect, url_for
 import os
-from invoice_processor import process_invoice  # Correct function import
+from invoice_processor import process_invoice  # Extracts invoice details
+from classification import classify_transaction  # Classifies transactions
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -26,12 +27,24 @@ def upload_file():
     file = request.files['file']
     if file.filename == '':
         return jsonify({'error': 'No selected file'})
+
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(filepath)
     
     try:
-        extracted_data = process_invoice(filepath)  # Use the correct function
+        # Process invoice to extract relevant data
+        extracted_data = process_invoice(filepath)
+
+        # Extract transaction description & amount
+        description = extracted_data.get("description", "Unknown transaction")
+        amount = extracted_data.get("amount", 0)
+
+        # Classify transaction as Taxable or Non-Taxable
+        tax_classification = classify_transaction(description, amount)
+        extracted_data["tax_classification"] = tax_classification  # Add classification result
+
         return jsonify(extracted_data)
+    
     except Exception as e:
         return jsonify({'error': f'Processing failed: {str(e)}'})
 

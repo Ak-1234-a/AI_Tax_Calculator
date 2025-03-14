@@ -15,7 +15,7 @@
             let file = fileInput.files[0];
             let formData = new FormData();
             formData.append('file', file);
-
+        
             fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -29,10 +29,11 @@
                         <td class="p-2">${data.client}</td>
                         <td class="p-2">$${data.amount}</td>
                         <td class="p-2">$${data.tax}</td>
+                        <td class="p-2">${data.tax_classification}</td>
                     </tr>`;
             })
             .catch(error => console.error('Error:', error));
-        }
+        }        
     </script>
 </head>
 <body class="bg-gray-900 text-white">
@@ -82,11 +83,13 @@
                             <th class="p-2">Client</th>
                             <th class="p-2">Amount</th>
                             <th class="p-2">Tax</th>
+                            <th class="p-2">Tax Classification</th>  <!-- New Column -->
                         </tr>
                     </thead>
                     <tbody id="invoiceTableBody">
+                        <!-- Rows will be dynamically added here -->
                     </tbody>
-                </table>
+                </table>                
             </div>
         </div>
     </div>
