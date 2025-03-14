@@ -5,17 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Entrepreneur Tax Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+        }
+        #sidebar {
+            width: 250px;
+            transition: width 0.2s ease;
+            min-width: 180px;
+            max-width: 400px;
+        }
+        #resizer {
+            width: 5px;
+            cursor: ew-resize;
+            background: rgba(255, 255, 255, 0.3);
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+        #resizer:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body class="flex">
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-gray-800 h-screen p-6 fixed flex flex-col">
+        <button onclick="toggleSidebar()" class="md:hidden text-white bg-gray-700 px-3 py-1 rounded mb-4">Close</button>
+        <h2 class="text-2xl font-bold">Dashboard</h2>
+        <ul class="mt-6">
+            <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+                <span class="mr-2">🏠</span><a href="#">Home</a>
+            </li>
+            <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+                <span class="mr-2">📊</span><a href="/tax-calculation">Tax Calculation</a>
+            </li>
+            <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+                <span class="mr-2">📄</span><a href="#">Reports</a>
+            </li>
+            <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+                <span class="mr-2">⚙️</span><a href="#">Settings</a>
+            </li>
+        </ul>
+        <div id="resizer"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="content" class="flex-1 p-10 ml-[250px] transition-all">
+        <button onclick="toggleSidebar()" class="md:hidden text-white bg-blue-500 px-3 py-1 rounded">Open Menu</button>
+        <h1 class="text-3xl font-bold">Welcome to Your Dashboard</h1>
+        <p class="mt-2 text-gray-400">Track your income, expenses, and tax obligations effortlessly.</p>
+
+        <!-- Upload Section -->
+        <div class="mt-8 bg-gray-800 p-6 rounded-lg">
+            <h3 class="text-xl font-bold">Upload Invoices/Bank Statements</h3>
+            <p class="text-gray-400">AI will process the documents using OCR to extract tax-relevant data.</p>
+            <input type="file" id="invoiceFile" class="mt-4 bg-gray-700 p-2 rounded w-full">
+            <button onclick="uploadInvoice()" class="mt-4 bg-blue-500 px-4 py-2 rounded text-white">Upload</button>
+        </div>
+
+        <!-- Invoice Table Section -->
+        <div class="mt-8 bg-gray-800 p-6 rounded-lg">
+            <h3 class="text-xl font-bold">Recent Invoices</h3>
+            <table class="w-full mt-4 border border-gray-700">
+                <thead>
+                    <tr class="bg-gray-700 text-white">
+                        <th class="p-2">Invoice Number</th>
+                        <th class="p-2">Date</th>
+                        <th class="p-2">Client</th>
+                        <th class="p-2">Amount</th>
+                        <th class="p-2">Tax</th>
+                        <th class="p-2">Tax Classification</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceTableBody">
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>                
+        </div>
+    </div>
+
     <script>
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            let sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
         }
-        
+
         function uploadInvoice() {
             let fileInput = document.getElementById('invoiceFile');
             let file = fileInput.files[0];
             let formData = new FormData();
             formData.append('file', file);
-        
+
             fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -31,105 +116,47 @@
                         <td class="p-2">$${data.tax}</td>
                         <td class="p-2">${data.tax_classification}</td>
                     </tr>`;
-
-                // Show tax deduction notification if taxable
-                if (data.tax_classification === "Taxable" && data.deduction_suggestions.length > 0) {
-                    showNotification(data.deduction_suggestions);
-                }
             })
             .catch(error => console.error('Error:', error));
         }
 
-        function showNotification(suggestions) {
-            let message = "<strong>Tax Deduction Tip:</strong><br>" + suggestions.join("<br>");
-            document.getElementById("notification-message").innerHTML = message;
-            let notification = document.getElementById("notification-container");
-            
-            notification.classList.remove("hidden", "translate-x-full");
-            setTimeout(() => {
-                notification.classList.add("translate-x-0");
-            }, 50);
-    
-            // Auto-hide after 6 seconds
-            setTimeout(() => {
-                closeNotification();
-            }, 6000);
+        // Sidebar Resizing Logic
+        let sidebar = document.getElementById('sidebar');
+        let resizer = document.getElementById('resizer');
+        let content = document.getElementById('content');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.addEventListener('mousemove', resizeSidebar);
+            document.addEventListener('mouseup', stopResize);
+        });
+
+        function resizeSidebar(e) {
+            if (isResizing) {
+                let newWidth = e.clientX;
+                if (newWidth > 180 && newWidth < 400) { 
+                    sidebar.style.width = newWidth + 'px';
+                    content.style.marginLeft = newWidth + 'px';
+                    localStorage.setItem('sidebarWidth', newWidth);
+                }
+            }
         }
-    
-        function closeNotification() {
-            let notification = document.getElementById("notification-container");
-            notification.classList.add("translate-x-full");
-            setTimeout(() => {
-                notification.classList.add("hidden");
-            }, 500);
+
+        function stopResize() {
+            isResizing = false;
+            document.removeEventListener('mousemove', resizeSidebar);
+            document.removeEventListener('mouseup', stopResize);
         }
+
+        // Load saved sidebar width
+        window.addEventListener('load', () => {
+            let savedWidth = localStorage.getItem('sidebarWidth');
+            if (savedWidth) {
+                sidebar.style.width = savedWidth + 'px';
+                content.style.marginLeft = savedWidth + 'px';
+            }
+        });
     </script>
-</head>
-<body class="bg-gray-900 text-white">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div id="sidebar" class="w-64 bg-gray-800 p-6 fixed h-full transform -translate-x-full transition-transform md:translate-x-0">
-            <button onclick="toggleSidebar()" class="md:hidden text-white bg-gray-700 px-3 py-1 rounded mb-4">Close</button>
-            <h2 class="text-2xl font-bold">Dashboard</h2>
-            <ul class="mt-6">
-                <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
-                    <span class="mr-2">🏠</span><a href="#">Home</a>
-                </li>
-                <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
-                    <span class="mr-2">📊</span><a href="#">Tax Calculation</a>
-                </li>
-                <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
-                    <span class="mr-2">📄</span><a href="#">Reports</a>
-                </li>
-                <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
-                    <span class="mr-2">⚙️</span><a href="#">Settings</a>
-                </li>
-            </ul>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="flex-1 p-10 ml-0 md:ml-64">
-            <button onclick="toggleSidebar()" class="md:hidden text-white bg-blue-500 px-3 py-1 rounded">Open Menu</button>
-            <h1 class="text-3xl font-bold">Welcome to Your Dashboard</h1>
-            <p class="mt-2 text-gray-400">Track your income, expenses, and tax obligations effortlessly.</p>
-
-            <!-- Upload Section -->
-            <div class="mt-8 bg-gray-800 p-6 rounded-lg">
-                <h3 class="text-xl font-bold">Upload Invoices/Bank Statements</h3>
-                <p class="text-gray-400">AI will process the documents using OCR to extract tax-relevant data.</p>
-                <input type="file" id="invoiceFile" class="mt-4 bg-gray-700 p-2 rounded w-full">
-                <button onclick="uploadInvoice()" class="mt-4 bg-blue-500 px-4 py-2 rounded text-white">Upload</button>
-            </div>
-
-            <!-- Invoice Table Section -->
-            <div class="mt-8 bg-gray-800 p-6 rounded-lg">
-                <h3 class="text-xl font-bold">Recent Invoices</h3>
-                <table class="w-full mt-4 border border-gray-700">
-                    <thead>
-                        <tr class="bg-gray-700 text-white">
-                            <th class="p-2">Invoice Number</th>
-                            <th class="p-2">Date</th>
-                            <th class="p-2">Client</th>
-                            <th class="p-2">Amount</th>
-                            <th class="p-2">Tax</th>
-                            <th class="p-2">Tax Classification</th>
-                        </tr>
-                    </thead>
-                    <tbody id="invoiceTableBody">
-                        <!-- Rows will be dynamically added here -->
-                    </tbody>
-                </table>                
-            </div>
-
-            <!-- Notification Container -->
-            <div id="notification-container" class="fixed top-5 right-5 bg-gray-800 text-white p-4 rounded-lg shadow-lg hidden flex items-start space-x-3 border-l-4 border-blue-500 transition-transform transform translate-x-full">
-                <div class="text-blue-400 text-2xl">⚡</div>
-                <div>
-                    <p id="notification-message" class="text-sm font-medium"></p>
-                    <button onclick="closeNotification()" class="mt-2 text-xs text-gray-300 hover:text-white">Dismiss</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>

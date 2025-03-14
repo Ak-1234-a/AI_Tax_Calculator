@@ -28,7 +28,7 @@ def get_tax_deductions(description, amount):
 def landing_page():
     return render_template('landing_page.html')
 
-@app.route('/Dashboard')
+@app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
 
@@ -36,18 +36,24 @@ def dashboard():
 def get_started():
     return redirect(url_for('dashboard'))
 
+@app.route('/tax-calculation')
+def tax_calculation():
+    return render_template('tax_calculation.html')
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        return jsonify({'error': 'No file part'})
+        return jsonify({'error': 'No file part found'}), 400
+    
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'error': 'No selected file'})
+        return jsonify({'error': 'No selected file'}), 400
 
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-    file.save(filepath)
     
     try:
+        file.save(filepath)
+
         # Process invoice to extract relevant data
         extracted_data = process_invoice(filepath)
 
@@ -65,7 +71,7 @@ def upload_file():
         return jsonify(extracted_data)
     
     except Exception as e:
-        return jsonify({'error': f'Processing failed: {str(e)}'})
+        return jsonify({'error': f'Processing failed: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
