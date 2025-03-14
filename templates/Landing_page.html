@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrepreneur Tax Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white relative overflow-hidden">
+    <div id="background-animation" class="absolute top-0 left-0 w-full h-full opacity-10 z-0"></div>
+    
+    <section class="relative flex flex-col items-center justify-center h-screen text-center px-6 z-10">
+        <div id="hero-animation" class="h-64 w-64"></div>
+        <h1 class="text-4xl md:text-6xl font-bold">AI-Powered Tax Calculator for Entrepreneurs</h1>
+        <p class="mt-4 text-lg text-gray-300">Smart, Fast & Accurate Tax Computation with AI Assistance.</p>
+        <div class="mt-6">
+            <form action="/getstarted" method="POST">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full text-lg transition-transform transform hover:scale-105">
+                    Get Started
+                </button>
+            </form>
+        </div>
+    </section>
+    
+    <script>
+        lottie.loadAnimation({
+            container: document.getElementById('hero-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://assets5.lottiefiles.com/packages/lf20_jcikwtux.json' 
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Entrepreneur Tax Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }
+        
+        function uploadInvoice() {
+            let fileInput = document.getElementById('invoiceFile');
+            let file = fileInput.files[0];
+            let formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('invoiceTableBody').innerHTML += `
+                    <tr class="text-gray-300 border-b border-gray-700">
+                        <td class="p-2">${data.invoice_number}</td>
+                        <td class="p-2">${data.date}</td>
+                        <td class="p-2">${data.client}</td>
+                        <td class="p-2">$${data.amount}</td>
+                        <td class="p-2">$${data.tax}</td>
+                    </tr>`;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-gray-800 p-6 fixed h-full transform -translate-x-full transition-transform md:translate-x-0">
+            <button onclick="toggleSidebar()" class="md:hidden text-white bg-gray-700 px-3 py-1 rounded mb-4">Close</button>
+            <h2 class="text-2xl font-bold">Dashboard</h2>
+            <ul class="mt-6">
+                <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+                    <span class="mr-2">🏠</span><a href="#">Home</a>
+                </li>
+                <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+                    <span class="mr-2">📊</span><a href="#">Tax Calculation</a>
+                </li>
+                <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+                    <span class="mr-2">📄</span><a href="#">Reports</a>
+                </li>
+                <li class="py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+                    <span class="mr-2">⚙️</span><a href="#">Settings</a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 p-10 ml-0 md:ml-64">
+            <button onclick="toggleSidebar()" class="md:hidden text-white bg-blue-500 px-3 py-1 rounded">Open Menu</button>
+            <h1 class="text-3xl font-bold">Welcome to Your Dashboard</h1>
+            <p class="mt-2 text-gray-400">Track your income, expenses, and tax obligations effortlessly.</p>
+
+            <!-- Upload Section -->
+            <div class="mt-8 bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-xl font-bold">Upload Invoices/Bank Statements</h3>
+                <p class="text-gray-400">AI will process the documents using OCR to extract tax-relevant data.</p>
+                <input type="file" id="invoiceFile" class="mt-4 bg-gray-700 p-2 rounded w-full">
+                <button onclick="uploadInvoice()" class="mt-4 bg-blue-500 px-4 py-2 rounded text-white">Upload</button>
+            </div>
+
+            <!-- Invoice Table Section -->
+            <div class="mt-8 bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-xl font-bold">Recent Invoices</h3>
+                <table class="w-full mt-4 border border-gray-700">
+                    <thead>
+                        <tr class="bg-gray-700 text-white">
+                            <th class="p-2">Invoice Number</th>
+                            <th class="p-2">Date</th>
+                            <th class="p-2">Client</th>
+                            <th class="p-2">Amount</th>
+                            <th class="p-2">Tax</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
