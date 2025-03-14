@@ -1,0 +1,4 @@
+flask
+os
+invoice_processor
+pdfplumber
