@@ -15,7 +15,10 @@ model = genai.GenerativeModel('gemini-1.5-pro')
 @app.errorhandler(404)
 def page_not_found(e):
     return redirect(url_for('index'))
-
+response =model.generate_content("Hi from praveen")
+print(response)
+#print(vars(response))
+print(response.text)
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
@@ -24,20 +27,12 @@ def index():
             print(f"User prompt: {prompt}")
 
             # Generate content using Gemini's model
-            response = model.generate_content(prompt)  # Ensure this is the correct method for generating content
-            print(type(response))
-            print(response.result)
-            print(response.result['candidates'][0]['content']['parts'][0]['text'])
+            response =model.generate_content(prompt)  # Ensure this is the correct method for generating content
+           
+            #print(response.result['candidates'][0]['content']['parts'][0]['text'])
             # Extracting the text from the response
-            if response and 'result' in response and 'candidates' in response.result:
-                candidates = response.result['candidates']
-                if candidates:
-                    content = candidates[0].get('content', {})
-                    parts = content.get('parts', [])
-                    if parts:
-                        text = parts[0].get('text', '')
-                        return text  # Return the extracted text
-                return "Sorry, but Gemini didn't want to answer that!"
+            if response.text:
+                return response.text
             else:
                 return "Sorry, but Gemini didn't want to answer that!"
         except Exception as e:
